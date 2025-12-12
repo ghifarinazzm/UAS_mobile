@@ -1,23 +1,10 @@
-// lib/main.dart
-
 import 'package:flutter/material.dart';
-import 'dart:io';
-// Import wrapper baru
-import 'pages/main_wrapper.dart'; 
-
-// Kelas HttpOverrides tetap dipertahankan untuk pemuatan gambar
-class MyHttpOverrides extends HttpOverrides{
-  @override
-  HttpClient createHttpClient(SecurityContext? context){
-    return super.createHttpClient(context)
-      ..badCertificateCallback = (X509Certificate cert, String host, int port)=> true;
-  }
-}
-
+import 'package:provider/provider.dart';
+import 'providers/auth_provider.dart';
+import 'providers/recipe_provider.dart';
+import 'pages/login_page.dart';
 
 void main() {
-  HttpOverrides.global = MyHttpOverrides(); 
-  
   runApp(const MyApp());
 }
 
@@ -26,24 +13,21 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Katalog Resep Nusantara',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.orange, 
-          primary: Colors.orange,
+    return MultiProvider(
+      providers: [
+        // Daftarkan Provider di sini
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => RecipeProvider()),
+      ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Flutter UAS Recipe',
+        theme: ThemeData(
+          primarySwatch: Colors.orange,
         ),
-        useMaterial3: true,
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.orange,
-          foregroundColor: Colors.white,
-          elevation: 1,
-          titleTextStyle: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
-        ),
+        // Halaman pertama yang dibuka adalah Login
+        home: const LoginPage(),
       ),
-      // UBAH HOME DARI HomePage/MenuPage ke MainWrapper
-      home: const MainWrapper(), 
     );
   }
 }
